@@ -4,6 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Розклад ЕП-26-1Д</title>
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2563eb">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Розклад">
 <style>
 :root{
   box-sizing:border-box;
@@ -164,7 +171,7 @@ function fmtLeft(min){
 
 function links(l, cls){
   let h = "";
-  if (safeUrl(l.link)) h += `<a class="${cls}" href="${esc(l.link)}" target="_blank" rel="noopener">${"Приєднатися"}</a>`;
+  if (safeUrl(l.link)) h += `<a class="${cls}" href="${esc(l.link)}" target="_blank" rel="noopener">${"Join"}</a>`;
   
   return h;
 }
