@@ -69,6 +69,7 @@ h1{font-size:18px;margin:0}
 .lesson.now{border-color:var(--ok);background:var(--ok-soft)}
 .lesson.next{border-color:var(--accent);background:var(--accent-soft)}
 .empty{text-align:center;color:var(--muted);padding:28px 0}
+footer{text-align:center;color:var(--muted);font-size:12px;margin-top:18px}
 </style>
 </head>
 <body>
@@ -78,6 +79,7 @@ h1{font-size:18px;margin:0}
   <div class="chips" id="chips"></div>
   <div id="hero"></div>
   <div class="list" id="list"></div>
+  <footer id="upd"></footer>
 </main>
 
 <script>
@@ -125,6 +127,7 @@ const SCHEDULE = {
 };
 /* ================================================= */
 
+const UPDATED = "10.10.2026";   // дата останнього оновлення розкладу — міняй при кожному оновленні
 const WD = ["Пн","Вт","Ср","Чт","Пт"];
 const FULL = ["Неділя","Понеділок","Вівторок","Середа","Четвер","П'ятниця","Субота"];
 const $ = id => document.getElementById(id);
@@ -161,9 +164,13 @@ function fmtLeft(min){
 
 function links(l, cls){
   let h = "";
-  if (safeUrl(l.link)) h += `<a class="${cls}" href="${esc(l.link)}" target="_blank" rel="noopener">${"Приєднатися"}</a>`;
+  if (safeUrl(l.link)) h += `<a class="${cls}" href="${esc(l.link)}" target="_blank" rel="noopener">${"Join"}</a>`;
   
   return h;
+}
+
+function lessonsOf(key){
+  return (SCHEDULE[key] || []).map(([s,k]) => ({key, start:SLOTS[s][0], end:SLOTS[s][1], ...SUBJ[k]}));
 }
 
 function render(){
@@ -171,6 +178,7 @@ function render(){
   const nowMin = now.getHours()*60 + now.getMinutes() + now.getSeconds()/60;
   $("clock").textContent = `${FULL[now.getDay()]}, ${pad(now.getHours())}:${pad(now.getMinutes())}`;
   $("range").textContent = `${fmtShort(weekStart)} – ${fmtShort(addDays(weekStart,4))}`;
+  $("upd").textContent = `Розклад оновлено ${UPDATED}`;
 
   const todayKey = keyOf(now);
   $("chips").innerHTML = WD.map((n,i) => {
@@ -178,12 +186,20 @@ function render(){
     return `<button class="chip ${SCHEDULE[k]?"has":""} ${k===todayKey?"today":""} ${k===selected?"active":""}" data-k="${k}">${n}<small>${fmtShort(d)}</small></button>`;
   }).join("");
 
-  const lessons = (SCHEDULE[selected] || []).map(([s,k]) => ({start:SLOTS[s][0], end:SLOTS[s][1], ...SUBJ[k]}));
+  const lessons = lessonsOf(selected);
   const isToday = selected === todayKey;
-  let cur = null, next = null;
-  if (isToday){
-    cur = lessons.find(l => nowMin >= toMin(l.start) && nowMin < toMin(l.end)) || null;
-    next = lessons.find(l => toMin(l.start) > nowMin) || null;
+
+  // Поточна пара і найближча наступна (у т.ч. в інші дні) — рахуємо від реального «сьогодні»
+  const todayLessons = lessonsOf(todayKey);
+  const cur = todayLessons.find(l => nowMin >= toMin(l.start) && nowMin < toMin(l.end)) || null;
+  let up = todayLessons.find(l => toMin(l.start) > nowMin) || null;
+  let upDate = null, upDays = 0;
+  if (!up){
+    const base = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    for (let i=1; i<=60 && !up; i++){
+      const d = addDays(base,i), ls = lessonsOf(keyOf(d));
+      if (ls.length){ up = ls[0]; upDate = d; upDays = i; }
+    }
   }
 
   let hero = "";
@@ -197,13 +213,17 @@ function render(){
       <div class="barinfo"><span>${Math.round(pct)}%</span><span>залишилось ${fmtLeft(b-nowMin)}</span></div>
       <div class="btns">${links(cur,"btn")}</div>
       ${cur.note ? `<div class="note">${esc(cur.note)}</div>` : ""}</div>`;
-  } else if (isToday && next){
-    hero = `<div class="hero"><div class="label">Далі · через ${fmtLeft(toMin(next.start)-nowMin)}</div>
-      <h2>${esc(next.title)}</h2><div class="meta">${meta(next)}</div>
-      <div class="btns">${links(next,"btn")}</div>
-      ${next.note ? `<div class="note">${esc(next.note)}</div>` : ""}</div>`;
-  } else if (isToday && lessons.length){
-    hero = `<div class="hero"><div class="label">На сьогодні все</div><h2>Пари закінчились 🎉</h2></div>`;
+  } else if (up){
+    let label;
+    if (!upDate) label = `Далі · через ${fmtLeft(toMin(up.start)-nowMin)}`;
+    else if (upDays === 1) label = `Далі · завтра о ${up.start}`;
+    else label = `Далі · ${FULL[upDate.getDay()].toLowerCase()}, ${fmtShort(upDate)} о ${up.start}`;
+    hero = `<div class="hero"><div class="label">${label}</div>
+      <h2>${esc(up.title)}</h2><div class="meta">${meta(up)}</div>
+      <div class="btns">${links(up,"btn")}</div>
+      ${up.note ? `<div class="note">${esc(up.note)}</div>` : ""}</div>`;
+  } else {
+    hero = `<div class="hero"><div class="label">Розклад</div><h2>Найближчих пар немає</h2></div>`;
   }
   $("hero").innerHTML = hero;
 
@@ -211,8 +231,8 @@ function render(){
     let cls = "";
     if (isToday){
       if (nowMin >= toMin(l.end)) cls = "done";
-      else if (l === cur) cls = "now";
-      else if (l === next && !cur) cls = "next";
+      else if (cur && l.start === cur.start) cls = "now";
+      else if (!cur && up && up.key === todayKey && l.start === up.start) cls = "next";
     }
     return `<div class="lesson ${cls}">
       <div class="time">${l.start}<br>${l.end}</div>
