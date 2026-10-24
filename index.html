@@ -73,6 +73,7 @@ h1{font-size:18px;margin:0}
 .lesson .links{display:flex;gap:12px;margin-top:6px}
 .lesson a{font-size:14px;font-weight:600;color:var(--accent);text-decoration:none}
 .lesson.done{opacity:.5}
+.lesson.done a{pointer-events:none}
 .lesson.now{border-color:var(--ok);background:var(--ok-soft)}
 .lesson.next{border-color:var(--accent);background:var(--accent-soft)}
 .empty{text-align:center;color:var(--muted);padding:28px 0}
@@ -165,6 +166,10 @@ const weekHasData = m => [0,1,2,3,4].some(i => SCHEDULE[keyOf(addDays(m,i))]);
 const firstDataDay = m => { for (let i=0;i<5;i++){ const k = keyOf(addDays(m,i)); if (SCHEDULE[k]) return k; } return keyOf(m); };
 
 let weekStart = mondayOf(getNow());
+if (getNow().getDay() === 0 || getNow().getDay() === 6){   // субота/неділя — одразу наступний тиждень
+  const nx = addDays(weekStart, 7);
+  if (weekHasData(nx)) weekStart = nx;
+}
 if (!weekHasData(weekStart)){
   for (let i=1;i<=30;i++){ const m = addDays(weekStart, 7*i); if (weekHasData(m)){ weekStart = m; break; } }
 }
@@ -248,7 +253,8 @@ function render(){
 
   $("list").innerHTML = lessons.length ? lessons.map(l => {
     let cls = "";
-    if (isToday){
+    if (selected < todayKey) cls = "done";
+    else if (isToday){
       if (nowMin >= toMin(l.end)) cls = "done";
       else if (cur && l.start === cur.start) cls = "now";
       else if (!cur && up && up.key === todayKey && l.start === up.start) cls = "next";
