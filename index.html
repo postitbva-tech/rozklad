@@ -99,27 +99,29 @@ const NOTE_KUZ = "ID 881 4816 9104 · код доступу: 1JLzze";
 // Предмети: викладач, посилання на пару (link), Google Classroom, примітка
 const SUBJ = {
   math: {title:"Вища математика", teacher:"Поворотній Віктор Володимирович",
-    link:"https://meet.google.com/qma-nsmj-dib",
-    classroom:"https://classroom.google.com/c/ODc4NDIxOTM3NTEz?cjc=sno2mwkg"},
+    link:"",
+    classroom:""},
   cult: {title:"Культурологія", teacher:"Кузнецов Олександр Анатолійович",
-    link:ZOOM_KUZ, note:NOTE_KUZ,
-    classroom:"https://classroom.google.com/c/ODI2MjAyMTgzODk1?hl=ru&cjc=2c2c7vtr"},
+    link:"",
+    classroom:""},
   hist: {title:"Історія України", teacher:"Кузнецов Олександр Анатолійович",
-    link:ZOOM_KUZ, note:NOTE_KUZ,
-    classroom:"https://classroom.google.com/c/ODc4MTg5Mjg5OTEw?hl=ru&cjc=syoakbgh"},
+    link:"",
+    classroom:""},
   phil: {title:"Основи філософських знань", teacher:"Кузнецов Олександр Анатолійович",
-    link:ZOOM_KUZ, note:NOTE_KUZ,
-    classroom:"https://classroom.google.com/c/ODc4MTkzMTA0ODQy?hl=ru&cjc=rplesvyy"},
+    link:"",
+    classroom:""},
   inf: {title:"Інформатика і комп'ютерна техніка", teacher:"Лозова Світлана Вікторівна",
-    link:"https://meet.google.com/xsv-zdov-iir",
-    classroom:"https://classroom.google.com/c/ODc4MjczMDgxMDE2?cjc=k2e7b4ci"},
+    link:"",
+    classroom:""},
   eng: {title:"Іноземна мова (за професійним спрямуванням)", teacher:"Підвисоцька Галина Володимирівна",
-    link:"https://us05web.zoom.us/j/6665056267?pwd=WXRCa2MyWWRSTVdlbUFpcGFVeTJzZz09",
-    note:"ID 666 505 6267 · код доступу: Rt1A5N", classroom:""},
+    link:"", classroom:""},
   ukr: {title:"Українська мова (за професійним спрямуванням)", teacher:"Гуцалова Вікторія Іванівна",
-    link:"https://us05web.zoom.us/j/4616582393?pwd=MG44YVZSYmR2YzIrZzRWSFNib0ZxZz09&omn=81424583029",
-    note:"ID 461 658 2393 · код доступу: t88taC",
-    classroom:"https://classroom.google.com/c/ODc4NDM3MDg4ODA1?cjc=atxhkrqg"}
+    link:"",
+    classroom:""},
+  polec: {title:"Політична економія", teacher:"Савченко Герман Георгійович",
+    place:"м. Дніпро, проспект Науки 4, кабінет 285", link:"", classroom:""},
+  econ: {title:"Економіка підприємства", teacher:"Гуцалова Вікторія Іванівна", link:"", classroom:""},
+  pol: {title:"Політологія", teacher:"Кузнецов Олександр Анатолійович", link:"", classroom:""}
 };
 
 // Номер пари → час
@@ -142,11 +144,16 @@ const SCHEDULE = {
   "2026-10-27": [[2,"cult","Консультація та диф. залік"]],
   "2026-10-28": [[2,"ukr","Консультація та диф. залік"],[3,"math","Консультація"]],
   "2026-10-29": [[3,"hist","Консультація та диф. залік"]],
-  "2026-11-02": [[2,"math","Екзамен"]]
+  "2026-11-02": [[2,"math","Екзамен"]],
+  "2026-11-09": [[2,"polec","Очно"],[3,"polec","Очно"]],
+  "2026-11-10": [[2,"eng"],[3,"econ"]],
+  "2026-11-11": [[1,"econ"],[2,"inf"]],
+  "2026-11-12": [[3,"pol"],[4,"inf"]],
+  "2026-11-13": [[1,"pol"],[2,"inf"],[3,"eng"],[4,"eng"]]
 };
 /* ================================================= */
 
-const UPDATED = "23.10.2026";   // дата останнього оновлення розкладу — міняй при кожному оновленні
+const UPDATED = "06.11.2026";   // дата останнього оновлення розкладу — міняй при кожному оновленні
 const WD = ["Пн","Вт","Ср","Чт","Пт"];
 const FULL = ["Неділя","Понеділок","Вівторок","Середа","Четвер","П'ятниця","Субота"];
 const $ = id => document.getElementById(id);
@@ -227,7 +234,7 @@ function render(){
   }
 
   let hero = "";
-  const meta = l => `${l.start}–${l.end}${l.teacher ? " · "+esc(l.teacher) : ""}`;
+  const meta = l => `${l.start}–${l.end}${l.teacher ? " · "+esc(l.teacher) : ""}${l.place ? "<br>📍 "+esc(l.place) : ""}`;
   if (cur){
     const a = toMin(cur.start), b = toMin(cur.end);
     const pct = Math.min(100, Math.max(0, (nowMin-a)/(b-a)*100));
@@ -263,6 +270,7 @@ function render(){
       <div class="time">${l.start}<br>${l.end}</div>
       <div class="info">${tagHtml(l)}<div class="t">${esc(l.title)}</div>
         <div class="s">${esc(l.teacher)}</div>
+        ${l.place ? `<div class="s">📍 ${esc(l.place)}</div>` : ""}
         <div class="links">${links(l,"lk")}</div></div></div>`;
   }).join("") : `<div class="empty">Пар немає</div>`;
 }
