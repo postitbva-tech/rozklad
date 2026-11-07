@@ -95,33 +95,32 @@ footer{text-align:center;color:var(--muted);font-size:12px;margin-top:18px}
 /* ===================== ДАНІ ===================== */
 const ZOOM_KUZ = "https://us05web.zoom.us/j/88148169104?pwd=iFCHP5ReamceQQq5k4hPtSBhaaz6Tx.1";
 const NOTE_KUZ = "ID 881 4816 9104 · код доступу: 1JLzze";
+const ZOOM_GUC = "https://us05web.zoom.us/j/4616582393?pwd=MG44YVZSYmR2YzIrZzRWSFNib0ZxZz09&omn=81424583029";
+const NOTE_GUC = "ID 461 658 2393 · код доступу: t88taC";
 
 // Предмети: викладач, посилання на пару (link), Google Classroom, примітка
 const SUBJ = {
   math: {title:"Вища математика", teacher:"Поворотній Віктор Володимирович",
-    link:"",
-    classroom:""},
+    link:"https://meet.google.com/qma-nsmj-dib", classroom:""},
   cult: {title:"Культурологія", teacher:"Кузнецов Олександр Анатолійович",
-    link:"",
-    classroom:""},
+    link:ZOOM_KUZ, note:NOTE_KUZ, classroom:""},
   hist: {title:"Історія України", teacher:"Кузнецов Олександр Анатолійович",
-    link:"",
-    classroom:""},
+    link:ZOOM_KUZ, note:NOTE_KUZ, classroom:""},
   phil: {title:"Основи філософських знань", teacher:"Кузнецов Олександр Анатолійович",
-    link:"",
-    classroom:""},
+    link:ZOOM_KUZ, note:NOTE_KUZ, classroom:""},
+  pol: {title:"Політологія", teacher:"Кузнецов Олександр Анатолійович",
+    link:ZOOM_KUZ, note:NOTE_KUZ, classroom:""},
   inf: {title:"Інформатика і комп'ютерна техніка", teacher:"Лозова Світлана Вікторівна",
-    link:"",
-    classroom:""},
+    link:"https://meet.google.com/xsv-zdov-iir", classroom:""},
   eng: {title:"Іноземна мова (за професійним спрямуванням)", teacher:"Підвисоцька Галина Володимирівна",
-    link:"", classroom:""},
+    link:"https://us05web.zoom.us/j/6665056267?pwd=WXRCa2MyWWRSTVdlbUFpcGFVeTJzZz09",
+    note:"ID 666 505 6267 · код доступу: Rt1A5N", classroom:""},
   ukr: {title:"Українська мова (за професійним спрямуванням)", teacher:"Гуцалова Вікторія Іванівна",
-    link:"",
-    classroom:""},
+    link:ZOOM_GUC, note:NOTE_GUC, classroom:""},
+  econ: {title:"Економіка підприємства", teacher:"Гуцалова Вікторія Іванівна",
+    link:ZOOM_GUC, note:NOTE_GUC, classroom:""},
   polec: {title:"Політична економія", teacher:"Савченко Герман Георгійович",
-    place:"м. Дніпро, проспект Науки 4, кабінет 285", link:"", classroom:""},
-  econ: {title:"Економіка підприємства", teacher:"Гуцалова Вікторія Іванівна", link:"", classroom:""},
-  pol: {title:"Політологія", teacher:"Кузнецов Олександр Анатолійович", link:"", classroom:""}
+    place:"м. Дніпро, проспект Науки 4, кабінет 285", link:"", classroom:""}
 };
 
 // Номер пари → час
@@ -153,7 +152,7 @@ const SCHEDULE = {
 };
 /* ================================================= */
 
-const UPDATED = "06.11.2026";   // дата останнього оновлення розкладу — міняй при кожному оновленні
+const UPDATED = "07.11.2026";   // дата останнього оновлення розкладу — міняй при кожному оновленні
 const WD = ["Пн","Вт","Ср","Чт","Пт"];
 const FULL = ["Неділя","Понеділок","Вівторок","Середа","Четвер","П'ятниця","Субота"];
 const $ = id => document.getElementById(id);
